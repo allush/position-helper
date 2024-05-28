@@ -30,20 +30,21 @@ const TRACKED_TOKENS = [
 async function main() {
     const promises = symbiosis.config.omniPools.map(async (poolConfig) => {
         const tokens = symbiosis.getOmniPoolTokens(poolConfig)
-        const token = tokens.find((i) => {
-            return !!TRACKED_TOKENS.find((trackedToken) => {
-                const rep = symbiosis.getRepresentation(trackedToken, poolConfig.chainId)
-                if (!rep) {
-                    return false
-                }
-                return i.equals(rep)
-            })
+        const token = TRACKED_TOKENS.find((trackedToken) => {
+            const rep = symbiosis.getRepresentation(trackedToken, poolConfig.chainId)
+            if (!rep) {
+                return false
+            }
+            return !!tokens.find((i) => i.equals(rep))
         })
         if (!token) {
             return
         }
-
-        const index = symbiosis.getOmniPoolTokenIndex(poolConfig, token)
+        const rep = symbiosis.getRepresentation(token, poolConfig.chainId)
+        if (!rep) {
+            return false
+        }
+        const index = symbiosis.getOmniPoolTokenIndex(poolConfig, rep)
         const poolContract = symbiosis.omniPool(poolConfig)
         const asset = await poolContract.indexToAsset(index)
 
