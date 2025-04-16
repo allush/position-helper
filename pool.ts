@@ -36,7 +36,11 @@ async function main() {
             const poolContract = symbiosis.omniPool(poolConfig)
             const asset = await poolContract.indexToAsset(index)
 
-            const balance = await poolContract.balanceOf(LP_HOLDER, index)
+            const lpBalance = await poolContract.balanceOf(LP_HOLDER, index)
+
+            const share = lpBalance
+                .mul(asset.liability)
+                .div(asset.totalSupply)
 
             const precision = Math.pow(10, 4)
 
@@ -45,7 +49,7 @@ async function main() {
                 tvl: parseFloat(asset.liability.mul(precision).div(1e18.toString()).toString()) / precision,
                 diff: parseFloat(asset.cash.sub(asset.liability).mul(precision).div(1e18.toString()).toString()) / precision,
                 percent: asset.liability.eq(0) ? 0 : (parseFloat(asset.cash.mul(10000).div(asset.liability).toString()) / 100 - 100),
-                balance: new TokenAmount(token, balance.toString()),
+                balance: new TokenAmount(token, share.toString()),
             })
         }
     }
