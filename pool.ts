@@ -1,7 +1,7 @@
 import {Symbiosis, TokenAmount} from "symbiosis-js-sdk";
 
 import { BigNumber } from '@ethersproject/bignumber'
-const symbiosis = new Symbiosis('mainnet', 'rootstock');
+const symbiosis = new Symbiosis('mainnet', 'position-helper');
 
 const LP_HOLDER = '0x...'
 
@@ -25,9 +25,12 @@ async function main() {
             const poolContract = symbiosis.omniPool(poolConfig)
             const asset = await poolContract.indexToAsset(index)
 
-            const lpBalance = await poolContract.balanceOf(LP_HOLDER, index)
-
             if (asset.liability.eq(0) || asset.cash.eq(0)) {
+                continue
+            }
+
+            const lpBalance = await poolContract.balanceOf(LP_HOLDER, index)
+            if (lpBalance.eq(0)) {
                 continue
             }
             const decimals = BigNumber.from(10).pow(token.decimals)
