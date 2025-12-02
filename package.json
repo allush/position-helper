@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "ethers": "^5.2.0",
-    "symbiosis-js-sdk": "3.5.30",
+    "symbiosis-js-sdk": "3.6.30",
     "ts-node": "^10.7.0"
   }
 }
